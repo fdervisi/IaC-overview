@@ -1,15 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
-    }
-    azurerm = {
-      source = "hashicorp/azurerm"
-    }
-  }
-}
-
 # Configure the AWS Provider
 provider "aws" {
   region = "eu-south-1"
@@ -108,11 +96,7 @@ resource "aws_instance" "ec2_linux" {
   vpc_security_group_ids = [aws_security_group.sg_allow_ssh.id]
 }
 
-
+# Print Public IP
 output "aws_ec2_public_ip" {
   value = aws_instance.ec2_linux.public_ip
-}
-
-output "ami_id" {
-  value = data.aws_ami.amazon-linux-2-kernel-5.id
 }
