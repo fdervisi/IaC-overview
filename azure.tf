@@ -1,5 +1,3 @@
-
-
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
   features {}
@@ -78,6 +76,7 @@ resource "azurerm_virtual_machine" "vm_1" {
   }
 }
 
+# Print Public IP
   output "azure_vm_public_ip" {
     value = azurerm_public_ip.pi_1.ip_address
   }
