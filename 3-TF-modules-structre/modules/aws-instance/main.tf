@@ -1,4 +1,17 @@
 # Configure the AWS Provider
+# provider "aws" {
+#   region = var.aws_region
+# }
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.0.0"
+    }
+  }
+}
+
 provider "aws" {
   region = var.aws_region
 }
@@ -52,6 +65,7 @@ resource "aws_route" "route_igw" {
 # Get latest AWS Linux AMI
 data "aws_ami" "amazon-linux-2-kernel-5" {
   most_recent = true
+  owners      = ["amazon"]
   filter {
     name   = "name"
     values = ["amzn2-ami-kernel-5*"]
