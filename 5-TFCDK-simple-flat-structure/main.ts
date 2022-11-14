@@ -1,7 +1,7 @@
 // Copyright (c) HashiCorp, Inc
 // SPDX-License-Identifier: MPL-2.0
 import { Construct } from 'constructs';
-import { App, TerraformStack } from 'cdktf';
+import { App, TerraformOutput, TerraformStack } from 'cdktf';
 import { AwsProvider } from '@cdktf/provider-aws/lib/provider';
 import { Vpc } from '@cdktf/provider-aws/lib/vpc';
 import { Subnet } from '@cdktf/provider-aws/lib/subnet';
@@ -10,6 +10,8 @@ import { RouteTable } from '@cdktf/provider-aws/lib/route-table';
 import { RouteTableAssociation } from '@cdktf/provider-aws/lib/route-table-association';
 import { Route } from '@cdktf/provider-aws/lib/route';
 import { DataAwsAmi } from '@cdktf/provider-aws/lib/data-aws-ami';
+import { SecurityGroup } from '@cdktf/provider-aws/lib/security-group';
+import { Instance } from '@cdktf/provider-aws/lib/instance';
 
 class MyStack extends TerraformStack {
   region: any;
@@ -20,10 +22,12 @@ class MyStack extends TerraformStack {
   rt_association: RouteTableAssociation;
   route_igw: Route;
   aws_ami: DataAwsAmi;
+  sg: SecurityGroup;
+  ec2: Instance;
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    // define resources here
+    // Region
     this.region = 'eu-south-1';
 
     // Configure the AWS Provider
@@ -61,7 +65,7 @@ class MyStack extends TerraformStack {
       { routeTableId: this.rt.id, subnetId: this.subnet.id }
     );
 
-    // Create a Route Default Route
+    // Create a Default Route
     this.route_igw = new Route(this, 'route_igw', {
       routeTableId: this.rt.id,
       destinationCidrBlock: '0.0.0.0/0',
@@ -72,6 +76,37 @@ class MyStack extends TerraformStack {
     this.aws_ami = new DataAwsAmi(this, 'aws_ami', {
       mostRecent: true,
       owners: ['amazon'],
+      filter: [{ name: 'name', values: ['amzn2-ami-kernel-5*'] }],
+    });
+
+    // Create Security Group
+    this.sg = new SecurityGroup(this, 'sg', {
+      name: 'sg_allow_ssh',
+      vpcId: this.vpc.id,
+      ingress: [
+        { description: 'ssh', protocol: 'tcp', fromPort: 22, toPort: 22 },
+      ],
+    });
+
+    // Create EC2 instance
+    this.ec2 = new Instance(this, 'ec2_1', {
+      ami: this.aws_ami.id,
+      associatePublicIpAddress: true,
+      subnetId: this.subnet.id,
+      instanceType: 't3.micro',
+      vpcSecurityGroupIds: [this.sg.id],
+      userData: `
+        #! /bin/bash
+        sudo yum update -y
+        sudo touch /home/ec2-user/USERDATA_EXECUTED
+        `,
+      tags: { Name: 'ec2_1' },
+    });
+
+    // Output Public IP
+    new TerraformOutput(this, 'public_ip', {
+      value: this.ec2.publicIp,
+      description: 'EC2 Public IP',
     });
   }
 }
