@@ -42,6 +42,12 @@ module "ec2_instances" {
   instance_type          = "t3.micro"
   vpc_security_group_ids = [module.vpc.default_security_group_id]
   subnet_id              = module.vpc.public_subnets[0]
+  user_data              = <<EOF
+  	#! /bin/bash
+    sudo yum update -y
+  	sudo touch /home/ec2-user/USERDATA_EXECUTED
+  EOF
+  
   tags = {
     Name = "ec2_1"
   }
