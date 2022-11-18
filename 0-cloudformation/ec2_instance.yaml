@@ -1,0 +1,87 @@
+Resources:
+  ControlPortAddress:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+  AssociateControlPort:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt 
+        - ControlPortAddress
+        - AllocationId
+      NetworkInterfaceId: !Ref controlXface
+  WebPortAddress:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
+  AssociateWebPort:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt 
+        - WebPortAddress
+        - AllocationId
+      NetworkInterfaceId: !Ref webXface
+  SSHSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+  WebSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref VpcId
+      GroupDescription: Enable HTTP access via user defined port
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+  controlXface:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref SubnetId
+      Description: Interface for controlling traffic such as SSH
+      GroupSet:
+        - !Ref SSHSecurityGroup
+      SourceDestCheck: true
+      Tags:
+        - Key: Network
+          Value: Control
+  webXface:
+    Type: 'AWS::EC2::NetworkInterface'
+    Properties:
+      SubnetId: !Ref SubnetId
+      Description: Interface for controlling traffic such as SSH
+      GroupSet:
+        - !Ref WebSecurityGroup
+      SourceDestCheck: true
+      Tags:
+        - Key: Network
+          Value: Web
+  Ec2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: !FindInMap 
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - AMI
+      KeyName: !Ref KeyName
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref controlXface
+          DeviceIndex: 0
+        - NetworkInterfaceId: !Ref webXface
+          DeviceIndex: 1
+      Tags:
+        - Key: Role
+          Value: Test Instance
+      UserData: !Base64 
+        'Fn::Sub': |
+          #!/bin/bash -xe
+          yum install ec2-net-utils -y
+          ec2ifup eth1
+          service httpd start
