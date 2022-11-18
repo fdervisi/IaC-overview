@@ -40,4 +40,8 @@ module "vm" {
   tags = {
     Name = "vm_1"
   }
+
+  depends_on = [
+    azurerm_resource_group.rg_iac
+  ]
 }
