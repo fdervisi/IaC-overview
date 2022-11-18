@@ -1,24 +1,3 @@
-# Terraform configuration
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "4.0.0"
-    }
-    azurerm = {
-      source = "hashicorp/azurerm"
-    }
-  }
-}
-
-provider "azurerm" {
-  features {
-    resource_group {
-      prevent_deletion_if_contains_resources = false
-    }
-  }
-}
-
 provider "aws" {
   region = "eu-south-1"
 }
@@ -66,18 +45,4 @@ module "ec2_instances" {
   tags = {
     Name = "ec2_1"
   }
-}
-
-# Create a Ressource Group
-resource "azurerm_resource_group" "rg_iac" {
-  name     = "fdervisi_IaC_basic"
-  location = "North Europe"
-}
-
-
-module "vnet" {
-  source  = "Azure/vnet/azurerm"
-  version = "3.0.0"
-  resource_group_name = azurerm_resource_group.rg_iac.name
-  vnet_location = azurerm_resource_group.rg_iac.location
 }
