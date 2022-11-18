@@ -171,15 +171,21 @@ class MyAzureStack extends TerraformStack {
 
     // Create a VM
     this.vm = new LinuxVirtualMachine(this, 'vm', {
-      name: 'vm_1',
+      name: 'vm-1',
       location: this.rg.location,
       resourceGroupName: this.rg.name,
       size: 'Standard_DS1_v2',
       networkInterfaceIds: [this.network_interface.id],
+      disablePasswordAuthentication: false,
       adminUsername: 'Fatos',
       adminPassword: 'Zscaler2022',
-      osDisk: [{ caching: 'ReadWrite', storageAccountType: 'Standard_LRS' }],
-      
+      osDisk: { caching: 'ReadWrite', storageAccountType: 'Standard_LRS' },
+      sourceImageReference: {
+        publisher: 'Canonical',
+        offer: 'UbuntuServer',
+        sku: '16.04-LTS',
+        version: 'latest',
+      },
     });
   }
 }
