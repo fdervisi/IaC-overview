@@ -34,6 +34,7 @@ module "vm" {
   vm_size             = "Standard_DS1_v2"
   vm_os_simple        = "UbuntuServer"
   vnet_subnet_id      = module.vnet.vnet_subnets[0]
+  remote_port         = 22
   admin_username      = "fatos"
   admin_password      = "Zscaler2022"
 
