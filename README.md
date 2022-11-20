@@ -13,4 +13,4 @@ cdktf init --template=typescript --local
 npm install @cdktf/provider-aws
 npm install @cdktf/provider-azurerm
 
-![IaC](drawings/IaC_overview.jpg)
+![IaC](drawings/IaC_overview.png)
