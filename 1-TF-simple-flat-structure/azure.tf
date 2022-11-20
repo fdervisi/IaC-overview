@@ -52,7 +52,7 @@ resource "azurerm_network_interface" "nic_1" {
 
 # Create a VM
 resource "azurerm_virtual_machine" "vm_1" {
-  name                = "vm_1"
+  name                = "vm_1" 
   location            = azurerm_resource_group.rg_iac.location
   resource_group_name = azurerm_resource_group.rg_iac.name
   vm_size             = "Standard_DS1_v2"
