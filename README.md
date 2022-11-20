@@ -12,3 +12,5 @@ sudo npm install -g npm@9.1.1
 cdktf init --template=typescript --local
 npm install @cdktf/provider-aws
 npm install @cdktf/provider-azurerm
+
+![IaC](drawings/IaC Aws - Azure Instance.jpg
