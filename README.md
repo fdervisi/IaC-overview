@@ -37,7 +37,7 @@ Alternatively, you can use standard modules available in [Terraform Registry](ht
 
 ## What is Terraform CDK
 
-Cloud Development Kit for Terraform (CDKTF) allows you to use familiar programming languages to define and provision infrastructure. This gives you access to the entire Terraform ecosystem without learning HashiCorp Configuration Language (HCL) and lets you leverage the power of your existing toolchain for testing, dependency management, etc.
+[Cloud Development Kit for Terraform (CDKTF)](https://developer.hashicorp.com/terraform/cdktf) allows you to use familiar programming languages to define and provision infrastructure. This gives you access to the entire Terraform ecosystem without learning HashiCorp Configuration Language (HCL) and lets you leverage the power of your existing toolchain for testing, dependency management, etc.
 
 One of the most popular languages for infrastructure-as-code is becoming Typescript. AWS CDK, Hashicorp CDK, Pulumi, and more support Typescript as a first-class citizen.
 
