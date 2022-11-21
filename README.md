@@ -43,11 +43,23 @@ One of the most popular languages for infrastructure-as-code is becoming Typescr
 
 ### Folder: 5-TFCDK-simple-flat-structure
 
-Here we use Terraform CDK to create a flat structure with hard coded parameters
+here we use Terraform CDK with TypeScript to create a flat structure with hard coded parmaters similar to the first example where we use Terraform HCL.
 
 
+## General Ressources
+### Install Terraform
 
-## Install Terraform CDK
+[Here](https://developer.hashicorp.com/terraform/cdktf) you can find a guide how to install Terraform. After installation you have to authenticate against AWS and Azure.
+
+[Here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs) you will find the process for authentication for AWS. The most simple solution is to export the Access and Secret Access Key:
+
+```
+$ export AWS_ACCESS_KEY_ID="anaccesskey"
+$ export AWS_SECRET_ACCESS_KEY="asecretkey"
+$ export AWS_REGION="us-west-2"
+```
+
+
 
 
 https://developer.hashicorp.com/terraform/tutorials/cdktf/cdktf-install
