@@ -43,7 +43,7 @@ One of the most popular languages for infrastructure-as-code is becoming Typescr
 
 ### Folder: 5-TFCDK-simple-flat-structure
 
-here we use Terraform CDK with TypeScript to create a flat structure with hard coded parmaters similar to the first example where we use Terraform HCL.
+[Here](5-TFCDK-simple-flat-structure) we use Terraform CDK with TypeScript to create a flat structure with hard coded parmaters similar to the first example where we use Terraform HCL.
 
 
 ## General Ressources
