@@ -51,6 +51,8 @@ here we use Terraform CDK with TypeScript to create a flat structure with hard c
 
 [Here](https://developer.hashicorp.com/terraform/cdktf) you can find a guide how to install Terraform. After installation you have to authenticate against AWS and Azure.
 
+#### AWS
+
 [Here](https://registry.terraform.io/providers/hashicorp/aws/latest/docs) you will find the process for authentication for AWS. The most simple solution is to export the Access and Secret Access Key:
 
 ```
@@ -59,13 +61,24 @@ $ export AWS_SECRET_ACCESS_KEY="asecretkey"
 $ export AWS_REGION="us-west-2"
 ```
 
+#### Azure
 
+[Here](https://learn.microsoft.com/en-us/azure/developer/terraform/authenticate-to-azure?tabs=bash) ou will find the process for authentication for AWS. The most simple solution is to export the credentials: 
 
+```
+export ARM_SUBSCRIPTION_ID="<azure_subscription_id>"
+export ARM_TENANT_ID="<azure_subscription_tenant_id>"
+export ARM_CLIENT_ID="<service_principal_appid>"
+export ARM_CLIENT_SECRET="<service_principal_password>"
+```
 
-https://developer.hashicorp.com/terraform/tutorials/cdktf/cdktf-install
-sudo npm install --global cdktf-cli@latest
-sudo npm install -g npm@9.1.1
-cdktf init --template=typescript --local
+### Install Terraform CDK
+
+[Here](https://developer.hashicorp.com/terraform/tutorials/cdktf/cdktf-install) you can find how to install Terraform CDK. After installation you need to install the Azure and AWS provider:
+
+```
 npm install @cdktf/provider-aws
 npm install @cdktf/provider-azurerm
+```
+
 
