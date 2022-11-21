@@ -1,7 +1,22 @@
 # IaC-overview
 
-This is basic AWS and Azure example how to deploy a Virtual Machine with public IP
+My goal is to describe the different possibilities in Terraform with two simple examples. The focus is to understand how to abstract the parameters from a flat structure where all the parameters are hard coded and finally get to a scalable modular design. 
 
+This is the simple infrastructure example used each subdirectory:
+
+## AWS:
+1x VPC
+1x Internet Gateway
+1x Subnet
+1x Virtual Machine
+
+## Azure:
+1x VNet
+1x Internet Gateway
+1x Subnet
+1x Virtual Machine
+
+![IaC](drawings/IaC_overview.png)
 
 ## Install Terraform CDK
 
