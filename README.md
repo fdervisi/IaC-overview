@@ -1,6 +1,6 @@
 # IaC-overview
 
-My goal is to describe the different possibilities in Terraform with two simple examples. The focus is to understand how to abstract the parameters from a flat structure where all the parameters are hard coded and finally get to a scalable modular design. 
+My goal is to describe the different possibilities of Terraform using two simple examples. The focus is to understand how to abstract the parameters from a flat structure, where all parameters are hard coded, to finally achieve a scalable modular design. 
 
 This is the simple infrastructure example used each subdirectory:
 
