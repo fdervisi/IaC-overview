@@ -5,10 +5,10 @@ My goal is to describe the different possibilities of Terraform using two simple
 This is the simple infrastructure example used each subdirectory:
 
 ### AWS:
-⋅* 1x VPC
-⋅* 1x Internet Gateway
-1x Subnet
-1x Virtual Machine
+..* 1x VPC
+* 1x Internet Gateway
+* 1x Subnet
+* 1x Virtual Machine
 
 ### Azure:
 1x VNet
