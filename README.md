@@ -18,19 +18,19 @@ This is the simple infrastructure example used each subdirectory:
 
 ![IaC](drawings/IaC_overview.png)
 
-### Folder: 1-TF-simple-flat-structure
+### Folder: [1-TF-simple-flat-structure](1-TF-simple-flat-structure)
 
 This is the simplest and probably the first coding attempt of someone starting with IaC. Here the parameters are defined in code and each resource individually.
 
-### Folder: 2-TF-simple-flat-structure-with-variables
+### Folder: [2-TF-simple-flat-structure-with-variables](2-TF-simple-flat-structure-with-variables)
 
 Here the parameters have already been moved to a seperate file, but a flat structure is still used where the resources are created individually.
 
-### Folder: 3-TF-custom-modules
+### Folder: [3-TF-custom-modules](3-TF-custom-modules)
 
 Now the flat structure has been modularized and you can call the modules in a scalable way.
 
-### Folder: 4-TF-standard-modules
+### Folder: [4-TF-standard-modules](4-TF-standard-modules)
 
 Alternatively, you can use standard modules available in [Terraform Registry](https://registry.terraform.io/browse/modules). In this simple example it was possible without problems, but most of the time a combination of custom and standard modules is needed.
 
@@ -41,9 +41,9 @@ Cloud Development Kit for Terraform (CDKTF) allows you to use familiar programmi
 
 One of the most popular languages for infrastructure-as-code is becoming Typescript. AWS CDK, Hashicorp CDK, Pulumi, and more support Typescript as a first-class citizen.
 
-### Folder: 5-TFCDK-simple-flat-structure
+### Folder: [5-TFCDK-simple-flat-structure](5-TFCDK-simple-flat-structure/)
 
-[Here](5-TFCDK-simple-flat-structure) we use Terraform CDK with TypeScript to create a flat structure with hard coded parmaters similar to the first example where we use Terraform HCL.
+Here we use Terraform CDK with TypeScript to create a flat structure with hard coded parmaters similar to the first example where we use Terraform HCL.
 
 
 ## General Ressources
