@@ -39,7 +39,7 @@ Alternatively, you can use standard modules available in [Terraform Registry](ht
 
 [Cloud Development Kit for Terraform (CDKTF)](https://developer.hashicorp.com/terraform/cdktf) allows you to use familiar programming languages to define and provision infrastructure. This gives you access to the entire Terraform ecosystem without learning HashiCorp Configuration Language (HCL) and lets you leverage the power of your existing toolchain for testing, dependency management, etc.
 
-One of the most popular languages for infrastructure-as-code is becoming Typescript. AWS CDK, Hashicorp CDK, Pulumi, and more support Typescript as a first-class citizen.
+One of the most popular languages for infrastructure-as-code is becoming [Typescript](https://www.typescriptlang.org/). AWS CDK, Hashicorp CDK, Pulumi, and more support Typescript as a first-class citizen.
 
 ### Folder: [5-TFCDK-simple-flat-structure](5-TFCDK-simple-flat-structure/)
 
