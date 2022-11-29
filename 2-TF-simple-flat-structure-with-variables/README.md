@@ -11,7 +11,7 @@ Here we find all the resources for Azure. The parameters are hard coded in the c
 Here we define the AWS and Azure provider which will be used.
 
 ## [variables.tf](variables.tf)
-Here we define the *type* of variables to be used in the code
+Here we define the **type** of [variables](https://developer.hashicorp.com/terraform/language/values/variables) to be used in the code
 
 ## [terraform.tfvars](terraform.tfvars)
-Here we define the *value* of variables to be used in the code
+Here we define the **value** of variables to be used in the code. Terraform also automatically loads of variable definitions file when it named exacly as ```terraform.tfvars```
