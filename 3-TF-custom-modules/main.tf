@@ -1,18 +1,3 @@
-# Terraform configuration
-
-# terraform {
-#   required_providers {
-#     aws = {
-#       source  = "hashicorp/aws"
-#       version = "~> 4.0"
-#     }
-#   }
-# }
-
-# provider "aws" {
-#   region = "eu-south-1"
-# }
-
 # Create EC2 and Networking Infrastructre in AWS
 module "aws__instances_1" {
   source = "./modules/aws-instance"
