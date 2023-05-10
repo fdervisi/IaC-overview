@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@cdktf/provider-aws": "^0.0.0",
+    "@cdktf/provider-tls": "^5.0.0"
+  }
+}
