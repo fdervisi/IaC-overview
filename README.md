@@ -750,8 +750,6 @@ Underneath, the Terraform CDK translates the code into standard Terraform config
 4. **Provider Agnostic:** The Terraform CDK maintains Terraform's advantage of being provider agnostic. This means that it can be used to provision infrastructure across multiple cloud providers.
 
 ```typescript
-// Copyright (c) HashiCorp, Inc
-// SPDX-License-Identifier: MPL-2.0
 import { Construct } from 'constructs';
 import { App, TerraformOutput, TerraformStack } from 'cdktf';
 import { AwsProvider } from '@cdktf/provider-aws/lib/provider';
@@ -950,7 +948,7 @@ app.synth();
 
 ```
 
-#### Analyzing the Provided Code
+## Analyzing the Provided Code
 
 The provided code offers an insightful look into the Terraform CDK's capabilities:
 
@@ -958,6 +956,9 @@ The provided code offers an insightful look into the Terraform CDK's capabilitie
 2. **Class-Based Definitions:** The code uses classes like `MyAwsStack` and `MyAzureStack` to define infrastructure for AWS and Azure, respectively. Each class encapsulates the logic for provisioning specific cloud resources, promoting a modular approach.
 3. **App Synthesis:** The CDK uses the `App` construct to combine multiple infrastructure stacks and generate the corresponding HCL code.
 
+
 ## Conclusion
 
 The Terraform CDK offers a fresh perspective on defining cloud infrastructure. While it might not replace HCL for all use cases, it provides an alternative for those who prefer a more programmatic approach to infrastructure as code. Whether you're a seasoned developer or an infrastructure specialist, understanding the strengths and use cases for both HCL and the Terraform CDK can help in selecting the right tool for the job.
+
+It's important to note that the provided CDK example is a basic representation and doesn't employ programming best practices. Many of the values are hardcoded, similar to our initial flat hardcoded example in Terraform HCL. If there's interest, I can also delve into a more comprehensive guide on best practices with Terraform CDK, ensuring that you're equipped to craft efficient, scalable, and maintainable infrastructure code.
