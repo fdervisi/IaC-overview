@@ -1,10 +1,10 @@
 # Mastering Modular & Scalable Design: A Journey with Terraform and Terraform CDK
 
-Infrastructure as Code (IaC) is a pivotal practice in the modern DevOps landscape. It paves the way for provisioning infrastructure through code, turning the infrastructure into something reproducible, scalable, and maintainable. Among the myriad of IaC tools available, Terraform by HashiCorp stands tall, offering support for a plethora of cloud platforms and services.
+Infrastructure as Code (IaC) is a key tool for modern DevOps. It lets us set up infrastructure using code, making it easy to reproduce, scale, and maintain. Among the many IaC tools out there, Terraform by HashiCorp is a top choice, supporting many cloud platforms like AWS and Azure.
 
-This guide aims to walk you through a transformation journey: starting from a flat, hardcoded, unscalable structure, gradually evolving into a modular design that aligns with best practices. As a consistent theme throughout this guide, we will be provisioning the same basic infrastructure on both AWS and Azure. This consistent reference point will make it easier for you to track the changes, witnessing firsthand how the code refines and enhances from one section to the next. By the culmination of this guide, we'll also explore the Terraform Cloud Development Kit (CDKtf) and shed light on the distinct advantages it offers.
+In this guide, we'll show you how to move from a simple, fixed setup to a flexible, modular design that follows best practices. To make things clear and consistent, we'll always set up the same basic infrastructure on both AWS and Azure. This way, you can easily see how the code changes and improves step by step. By the end of the guide, we'll also dive into the Terraform Cloud Development Kit (CDKtf) and talk about its benefits.
 
-Join us on this transformative journey, as we navigate the intricacies of Infrastructure as Code, making it more efficient, modular, and powerful with each step.
+Join us as we take a deep dive into Infrastructure as Code, making it better with each step.
 
 ## What Will We Deploy?
 Throughout this guide, we'll be deploying the following components in both AWS and Azure:
@@ -750,6 +750,9 @@ Underneath, the Terraform CDK translates the code into standard Terraform config
 2. **Reusability:** Thanks to the object-oriented nature of programming languages, developers can create reusable constructs and components. This feature promotes best practices and ensures consistency across multiple projects.
 3. **Iterative Development:** With the CDK, developers can use iterative programming constructs, like loops and conditions, to generate dynamic infrastructure configurations.
 4. **Provider Agnostic:** The Terraform CDK maintains Terraform's advantage of being provider agnostic. This means that it can be used to provision infrastructure across multiple cloud providers.
+
+## [AWS & Azure Terraform CDK based on TypeScript](5-TFCDK-simple-flat-structure/)
+
 
 ```typescript
 import { Construct } from 'constructs';
