@@ -1,8 +1,10 @@
 # Infrastructure as Code (IaC) with Terraform: A Comprehensive Guide
 
-Infrastructure as Code (IaC) is a key practice in the world of DevOps, allowing infrastructure provisioning through code. This makes infrastructure reproducible, scalable, and maintainable. Terraform, by HashiCorp, stands out as one of the most popular IaC tools, supporting numerous cloud platforms and services.
+Infrastructure as Code (IaC) is a pivotal practice in the modern DevOps landscape. It paves the way for provisioning infrastructure through code, turning the infrastructure into something reproducible, scalable, and maintainable. Among the myriad of IaC tools available, Terraform by HashiCorp stands tall, offering support for a plethora of cloud platforms and services.
 
-This guide is designed to give you a step-by-step instruction on how to transition from a flat, hardcoded, unscalable structure to a modular design that follows best practices. By the end of this guide, we'll also delve into using the Terraform Cloud Development Kit (CDKtf) and discuss the unique benefits it brings to the table.
+This guide aims to walk you through a transformation journey: starting from a flat, hardcoded, unscalable structure, gradually evolving into a modular design that aligns with best practices. As a consistent theme throughout this guide, we will be provisioning the same basic infrastructure on both AWS and Azure. This consistent reference point will make it easier for you to track the changes, witnessing firsthand how the code refines and enhances from one section to the next. By the culmination of this guide, we'll also explore the Terraform Cloud Development Kit (CDKtf) and shed light on the distinct advantages it offers.
+
+Join us on this transformative journey, as we navigate the intricacies of Infrastructure as Code, making it more efficient, modular, and powerful with each step.
 
 ## What Will We Deploy?
 Throughout this guide, we'll be deploying the following components in both AWS and Azure:
@@ -948,9 +950,9 @@ app.synth();
 
 ```
 
-## Analyzing the Provided Code
+## Analyzing the Code
 
-The provided code offers an insightful look into the Terraform CDK's capabilities:
+The code offers an insightful look into the Terraform CDK's capabilities:
 
 1. **Hardcoded Values:** As with the earlier HCL example, the CDK code also has hardcoded values for various infrastructure components. This means there's a direct mapping between the CDK and its equivalent HCL, making it easier for those familiar with HCL to transition to the CDK.
 2. **Class-Based Definitions:** The code uses classes like `MyAwsStack` and `MyAzureStack` to define infrastructure for AWS and Azure, respectively. Each class encapsulates the logic for provisioning specific cloud resources, promoting a modular approach.
