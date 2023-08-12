@@ -730,26 +730,234 @@ module "vm" {
 }
 ```
 
-
-
-
-
 ---
 
-# 5. Hierarchical Design in Terraform
+# 5. Terraform Cloud Development Kit (CDK) vs. Terraform HCL
 
-In larger infrastructure setups, it's not just about organizing resources but also about organizing the way these resources relate to each other. A hierarchical design ensures that resources are managed at the right level of granularity, with dependencies clearly defined. 
+After exploring the traditional Terraform HashiCorp Configuration Language (HCL) in the previous section, let's delve into the Terraform Cloud Development Kit (CDK) and highlight its differences and benefits compared to standard HCL.
 
-For instance, networking components might be managed separately from application instances, but the latter would depend on the former. A hierarchical structure clearly depicts these relationships, making it easier to manage and understand the infrastructure as a whole.
+## What is Terraform CDK?
 
----
+The Terraform CDK is a software development framework that provides a way for users to leverage familiar programming languages, such as TypeScript and Python, to define and provision cloud infrastructure. Instead of writing declarative HCL code, developers can use imperative programming constructs, making it feel more natural to those with a software development background.
 
-# 6. Terraform with AWS and Azure Using CDKtf
+Underneath, the Terraform CDK translates the code into standard Terraform configuration (HCL), thus allowing it to leverage the robustness and capabilities of the Terraform engine.
 
-The Cloud Development Kit for Terraform (CDKtf) brings the familiar procedural programming model to Terraform, allowing for more dynamic and complex configurations.
+## Benefits of Terraform CDK Over HCL
 
-## AWS Configuration with CDKtf (`main.ts`)
+1. **Familiarity for Developers:** Developers can use the programming languages they are comfortable with, bridging the gap between traditional software development and infrastructure as code.
+2. **Reusability:** Thanks to the object-oriented nature of programming languages, developers can create reusable constructs and components. This feature promotes best practices and ensures consistency across multiple projects.
+3. **Iterative Development:** With the CDK, developers can use iterative programming constructs, like loops and conditions, to generate dynamic infrastructure configurations.
+4. **Provider Agnostic:** The Terraform CDK maintains Terraform's advantage of being provider agnostic. This means that it can be used to provision infrastructure across multiple cloud providers.
 
 ```typescript
-# ... (your configurations)
+// Copyright (c) HashiCorp, Inc
+// SPDX-License-Identifier: MPL-2.0
+import { Construct } from 'constructs';
+import { App, TerraformOutput, TerraformStack } from 'cdktf';
+import { AwsProvider } from '@cdktf/provider-aws/lib/provider';
+import { AzurermProvider } from '@cdktf/provider-azurerm/lib/provider';
+import { Vpc } from '@cdktf/provider-aws/lib/vpc';
+import { Subnet as AwsSubnet } from '@cdktf/provider-aws/lib/subnet';
+import { InternetGateway } from '@cdktf/provider-aws/lib/internet-gateway';
+import { RouteTable } from '@cdktf/provider-aws/lib/route-table';
+import { RouteTableAssociation } from '@cdktf/provider-aws/lib/route-table-association';
+import { Route } from '@cdktf/provider-aws/lib/route';
+import { DataAwsAmi } from '@cdktf/provider-aws/lib/data-aws-ami';
+import { SecurityGroup } from '@cdktf/provider-aws/lib/security-group';
+import { Instance } from '@cdktf/provider-aws/lib/instance';
+import { ResourceGroup } from '@cdktf/provider-azurerm/lib/resource-group';
+import { VirtualNetwork } from '@cdktf/provider-azurerm/lib/virtual-network';
+import { LinuxVirtualMachine } from '@cdktf/provider-azurerm/lib/linux-virtual-machine';
+import { Subnet } from '@cdktf/provider-azurerm/lib/subnet';
+import { NetworkInterface } from '@cdktf/provider-azurerm/lib/network-interface';
+
+class MyAwsStack extends TerraformStack {
+  region: any;
+  vpc: Vpc;
+  subnet: AwsSubnet;
+  igw: InternetGateway;
+  rt: RouteTable;
+  rt_association: RouteTableAssociation;
+  route_igw: Route;
+  aws_ami: DataAwsAmi;
+  sg: SecurityGroup;
+  ec2: Instance;
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    // Region
+    this.region = 'eu-south-1';
+
+    // Configure the AWS Provider
+    new AwsProvider(this, 'AWS', { region: this.region });
+
+    // Create a VPC
+    this.vpc = new Vpc(this, 'vpc_1', {
+      cidrBlock: '10.0.0.0/16',
+      tags: { Name: 'vpc_1' },
+    });
+
+    // Create a Subnet
+    this.subnet = new AwsSubnet(this, 'subnet_1', {
+      cidrBlock: '10.0.0.0/24',
+      vpcId: this.vpc.id,
+      tags: { Name: 'subnet_1' },
+    });
+
+    // Create a IGW
+    this.igw = new InternetGateway(this, 'igw', {
+      vpcId: this.vpc.id,
+      tags: { Name: 'igw_vpc_1' },
+    });
+
+    // Create a Route Table
+    this.rt = new RouteTable(this, 'rt', {
+      vpcId: this.vpc.id,
+      tags: { Name: 'rt_vpc_1' },
+    });
+
+    // Create a Route Table Association
+    this.rt_association = new RouteTableAssociation(
+      this,
+      'rt_association_vpc1',
+      { routeTableId: this.rt.id, subnetId: this.subnet.id }
+    );
+
+    // Create a Default Route
+    this.route_igw = new Route(this, 'route_igw', {
+      routeTableId: this.rt.id,
+      destinationCidrBlock: '0.0.0.0/0',
+      gatewayId: this.igw.id,
+    });
+
+    // Get latest AWS Linux AMI
+    this.aws_ami = new DataAwsAmi(this, 'aws_ami', {
+      mostRecent: true,
+      owners: ['amazon'],
+      filter: [{ name: 'name', values: ['amzn2-ami-kernel-5*'] }],
+    });
+
+    // Create Security Group
+    this.sg = new SecurityGroup(this, 'sg', {
+      name: 'sg_allow_ssh',
+      vpcId: this.vpc.id,
+      ingress: [
+        { description: 'ssh', protocol: 'tcp', fromPort: 22, toPort: 22 },
+      ],
+    });
+
+    // Create EC2 instance
+    this.ec2 = new Instance(this, 'ec2_1', {
+      ami: this.aws_ami.id,
+      associatePublicIpAddress: true,
+      subnetId: this.subnet.id,
+      instanceType: 't3.micro',
+      vpcSecurityGroupIds: [this.sg.id],
+      userData: `
+        #! /bin/bash
+        sudo yum update -y
+        sudo touch /home/ec2-user/USERDATA_EXECUTED
+        `,
+      tags: { Name: 'ec2_1' },
+    });
+
+    // Output Public IP
+    new TerraformOutput(this, 'public_ip', {
+      value: this.ec2.publicIp,
+      description: 'EC2 Public IP',
+    });
+  }
+}
+
+class MyAzureStack extends TerraformStack {
+  rg: ResourceGroup;
+  vnet: VirtualNetwork;
+  subnet: Subnet;
+  network_interface: NetworkInterface;
+  vm: LinuxVirtualMachine;
+
+  constructor(scope: Construct, name: string) {
+    super(scope, name);
+
+    new AzurermProvider(this, 'AzureRm', {
+      features: {
+        resourceGroup: { preventDeletionIfContainsResources: false },
+      },
+    });
+
+    // Create a Ressource Group
+    this.rg = new ResourceGroup(this, 'rg', {
+      name: 'fdervisi_IaC_basic',
+      location: 'North Europe',
+    });
+
+    // Create a VNet
+    this.vnet = new VirtualNetwork(this, 'vnet_1', {
+      resourceGroupName: this.rg.name,
+      name: 'vnet_1',
+      location: this.rg.location,
+      addressSpace: ['10.0.0.0/16'],
+    });
+
+    // Create a Subnet
+    this.subnet = new Subnet(this, 'subnet', {
+      addressPrefixes: ['10.0.0.0/16'],
+      resourceGroupName: this.rg.name,
+      virtualNetworkName: this.vnet.name,
+      name: 'subnet_1',
+    });
+
+    // Create Network Interface
+    this.network_interface = new NetworkInterface(this, 'nic', {
+      name: 'nic_1',
+      location: this.rg.location,
+      resourceGroupName: this.rg.name,
+      ipConfiguration: [
+        {
+          name: 'nic_ip',
+          subnetId: this.subnet.id,
+          privateIpAddressAllocation: 'Dynamic',
+        },
+      ],
+    });
+
+    // Create a VM
+    this.vm = new LinuxVirtualMachine(this, 'vm', {
+      name: 'vm-1',
+      location: this.rg.location,
+      resourceGroupName: this.rg.name,
+      size: 'Standard_DS1_v2',
+      networkInterfaceIds: [this.network_interface.id],
+      disablePasswordAuthentication: false,
+      adminUsername: 'Fatos',
+      adminPassword: 'Zscaler2022',
+      osDisk: { caching: 'ReadWrite', storageAccountType: 'Standard_LRS' },
+      sourceImageReference: {
+        publisher: 'Canonical',
+        offer: 'UbuntuServer',
+        sku: '16.04-LTS',
+        version: 'latest',
+      },
+    });
+  }
+}
+
+const app = new App();
+new MyAwsStack(app, 'AwsStack');
+new MyAzureStack(app, 'AzureStack');
+
+app.synth();
+
 ```
+
+#### Analyzing the Provided Code
+
+The provided code offers an insightful look into the Terraform CDK's capabilities:
+
+1. **Hardcoded Values:** As with the earlier HCL example, the CDK code also has hardcoded values for various infrastructure components. This means there's a direct mapping between the CDK and its equivalent HCL, making it easier for those familiar with HCL to transition to the CDK.
+2. **Class-Based Definitions:** The code uses classes like `MyAwsStack` and `MyAzureStack` to define infrastructure for AWS and Azure, respectively. Each class encapsulates the logic for provisioning specific cloud resources, promoting a modular approach.
+3. **App Synthesis:** The CDK uses the `App` construct to combine multiple infrastructure stacks and generate the corresponding HCL code.
+
+## Conclusion
+
+The Terraform CDK offers a fresh perspective on defining cloud infrastructure. While it might not replace HCL for all use cases, it provides an alternative for those who prefer a more programmatic approach to infrastructure as code. Whether you're a seasoned developer or an infrastructure specialist, understanding the strengths and use cases for both HCL and the Terraform CDK can help in selecting the right tool for the job.
