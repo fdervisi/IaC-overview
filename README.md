@@ -242,31 +242,310 @@ This is where variables come into play. Instead of scattering these values throu
 
 In essence, variables transition our Terraform setup from a one-time, static configuration to a dynamic, adaptable, and scalable infrastructure blueprint. They act as the bridge between the basic, copied-from-the-docs setup and a more professional, scalable design.
 
---- 
-
-This expanded section ties in the concept of variables with the initial stages of a Terraform user's journey, explaining their importance in a growing infrastructure setup.
 
 ## AWS Configuration with Variables (`aws.tf`)
 
 ```terraform
-# ... (your configurations)
+# Configure the AWS Provider
+provider "aws" {
+  region = var.aws_region
+}
+
+# Create a VPC
+resource "aws_vpc" "vpc1" {
+  cidr_block = var.aws_vpc_cidr
+  tags = {
+    "Name" = var.aws_vpc_name
+  }
+}
+
+# Create a Subnet
+resource "aws_subnet" "subnet1" {
+  vpc_id     = aws_vpc.vpc1.id
+  cidr_block = var.aws_subnet_cidr
+  tags = {
+    "Name" = var.aws_subnet_name
+  }
+}
+
+# Create a IGW
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc1.id
+  tags = {
+    "Name" = "igw_vpc_1"
+  }
+}
+
+# Create a Route Table
+resource "aws_route_table" "rt_vpc1" {
+  vpc_id = aws_vpc.vpc1.id
+  tags = {
+    "Name" = "rt_vpc_1"
+  }
+}
+
+# Create a Route Table Association
+resource "aws_route_table_association" "rt_association_vpc1" {
+  route_table_id = aws_route_table.rt_vpc1.id
+  subnet_id      = aws_subnet.subnet1.id
+}
+
+# Create a Route Default Route
+resource "aws_route" "route_igw" {
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
+  route_table_id         = aws_route_table.rt_vpc1.id
+}
+
+# Get latest AWS Linux AMI
+data "aws_ami" "amazon-linux-2-kernel-5" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-5*"]
+  }
+}
+
+# Create Security Group
+resource "aws_security_group" "sg_allow_ssh" {
+  name   = "sc_allow_ssh"
+  vpc_id = aws_vpc.vpc1.id
+  ingress {
+    description = "ssh"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+
+  }
+}
+
+# Create EC2 Instance
+resource "aws_instance" "ec2_linux" {
+  ami                         = data.aws_ami.amazon-linux-2-kernel-5.id
+  subnet_id                   = aws_subnet.subnet1.id
+  associate_public_ip_address = true
+  instance_type               = var.aws_ec2_instance_type
+  key_name                    = var.aws_ec2_key_pair_name
+  tags = {
+    "Name" = var.aws_ec2_name
+  }
+  user_data              = <<EOF
+  	#! /bin/bash
+    sudo yum update -y
+  	sudo touch /home/ec2-user/USERDATA_EXECUTED
+  EOF
+  vpc_security_group_ids = [aws_security_group.sg_allow_ssh.id]
+}
 ```
 
 ## Azure Configuration with Variables (`azure.tf`)
 
 ```terraform
-# ... (your configurations)
-```
-
-## Example Variable File (`variables.tf`)
-
-```terraform
-variable "aws_region" {
-  description = "The AWS region to deploy into"
-  default     = "eu-south-1"
+# Configure the Microsoft Azure Provider
+provider "azurerm" {
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 }
 
-# ... (more variables)
+# Create a Ressource Group
+resource "azurerm_resource_group" "rg_iac" {
+  name     = var.azure_resource_group
+  location = var.azure_location
+}
+
+# Create a VNet
+resource "azurerm_virtual_network" "vnet_1" {
+  resource_group_name = azurerm_resource_group.rg_iac.name
+  name                = var.azure_vnet_name
+  address_space       = [var.azure_vnet_cidr]
+  location            = azurerm_resource_group.rg_iac.location
+}
+
+# Create a Subnet
+resource "azurerm_subnet" "subnet_1" {
+  address_prefixes     = [var.azure_subnet_cidr]
+  resource_group_name  = azurerm_resource_group.rg_iac.name
+  virtual_network_name = azurerm_virtual_network.vnet_1.name
+  name                 = var.azure_subnet_name
+}
+
+# Create a Public IP
+resource "azurerm_public_ip" "ip_1" {
+  allocation_method = "Static"
+  name = "public_ip_1"
+  resource_group_name = azurerm_resource_group.rg_iac.name
+  location = azurerm_resource_group.rg_iac.location
+}
+
+# Create a Network Interface
+resource "azurerm_network_interface" "nic_1" {
+  name                = "nic_1"
+  location            = azurerm_resource_group.rg_iac.location
+  resource_group_name = azurerm_resource_group.rg_iac.name
+  ip_configuration {
+    name                          = "nic_ip"
+    subnet_id                     = azurerm_subnet.subnet_1.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id = azurerm_public_ip.ip_1.id
+  }
+}
+
+# Create a VM
+resource "azurerm_virtual_machine" "vm_1" {
+  name                = var.azure_instance_name
+  location            = azurerm_resource_group.rg_iac.location
+  resource_group_name = azurerm_resource_group.rg_iac.name
+  vm_size             = var.azure_vm_size
+  network_interface_ids = [azurerm_network_interface.nic_1.id]
+  storage_os_disk {
+    name              = "myosdisk1"
+    caching           = "ReadWrite"
+    create_option     = "FromImage"
+    managed_disk_type = "Standard_LRS"
+  }
+  storage_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "16.04-LTS"
+    version   = "latest"
+  }
+  os_profile {
+    computer_name  = "ubuntu"
+    admin_username = var.azure_admin_username
+    admin_password = var.azure_admin_password
+  }
+  os_profile_linux_config {
+    disable_password_authentication = false
+  }
+}
+
+```
+
+## Variable File (`variables.tf`)
+
+```terraform
+## Input variable definitions
+# AWS
+
+variable "aws_region" {
+  description = "Region of AWS"
+  type        = string
+}
+
+variable "aws_vpc_name" {
+  description = "Name of VPC"
+  type        = string
+}
+
+variable "aws_vpc_cidr" {
+  description = "CIDR block for VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "aws_subnet_cidr" {
+  description = "Subnet CIDR"
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "aws_subnet_name" {
+  description = "Name of Subnet"
+  type        = string
+}
+
+variable "aws_ec2_name" {
+  description = "Name of EC2"
+  type        = string
+}
+
+variable "aws_ec2_instance_type" {
+  description = "Instance Type of EC2"
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "aws_ec2_key_pair_name" {
+  description = "Key Pair Name for EC2"
+  type        = string
+}
+
+# Azure
+
+variable "azure_resource_group" {
+  description = "Name of Resource Group"
+  type        = string
+}
+
+variable "azure_location" {
+  description = "Location of Resource Group"
+  type        = string
+}
+
+variable "azure_vnet_name" {
+  description = "Name of VPC"
+  type        = string
+}
+
+variable "azure_vnet_cidr" {
+  description = "CIDR block for VPC"
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "azure_subnet_cidr" {
+  description = "Subnet CIDR"
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "azure_subnet_name" {
+  description = "Name of Subnet"
+  type        = string
+}
+
+variable "azure_instance_name" {
+  description = "Name of the Instance"
+  type        = string
+}
+
+variable "azure_vm_size" {
+  description = "VM Size of the Instance"
+  type        = string
+  default     = "Standard_DS1_v2"
+}
+
+variable "azure_admin_username" {
+  description = "Admin Username for Instance"
+  type        = string
+}
+
+variable "azure_admin_password" {
+  description = "Admin Password for Instance"
+  type        = string
+}
+
+
+
+variable "vpc_tags" {
+  description = "Tags to apply to resources created by VPC module"
+  type        = map(string)
+  default = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
+
 ```
 
 ---
