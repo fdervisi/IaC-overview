@@ -744,6 +744,8 @@ The Terraform CDK is a software development framework that provides a way for us
 
 Underneath, the Terraform CDK translates the code into standard Terraform configuration (HCL), thus allowing it to leverage the robustness and capabilities of the Terraform engine.
 
+![Terraform CDK](drawings/terrafrom-cdk.png)
+
 ## Benefits of Terraform CDK Over HCL
 
 1. **Familiarity for Developers:** Developers can use the programming languages they are comfortable with, bridging the gap between traditional software development and infrastructure as code.
