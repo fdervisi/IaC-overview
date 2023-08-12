@@ -23,7 +23,7 @@ Throughout this guide, we'll be deploying the following components in both AWS a
 
 ---
 
-# 1. Basic Terraform with a Flat Structure
+# 1. [Basic Terraform with a Flat Structure](1-TF-simple-flat-structure)
 
 Starting with the basics, most of us begin our Terraform journey by picking up snippets and examples from the official documentation. We tend to copy, paste, and adjust these examples to fit our immediate needs, directly modifying the hardcoded parameters. While this method offers a quick way to define and provision resources using IaC on platforms like AWS and Microsoft Azure, it's akin to taking our first steps in the vast world of infrastructure automation.
 
@@ -230,7 +230,7 @@ resource "azurerm_virtual_machine" "vm_1" {
 
 ---
 
-# 2. Advancing with Variables
+# 2. [Advancing with Variable](2-TF-simple-flat-structure-with-variables)
 
 After our initial foray into Terraform using hardcoded values, the next logical progression is the introduction of variables. Remember those snippets we copied and adjusted from the documentation? They often had direct values mentioned in them. For instance, you might have an AWS region like `eu-south-1` hardcoded multiple times across various configurations. Now, imagine the tedious task of changing this region in every single location should the need arise.
 
@@ -568,9 +568,6 @@ Let's delve deeper into the benefits:
 
 In essence, modules are the next evolutionary step in our Terraform journey. After understanding the basics and appreciating the power of variables, modules showcase how Terraform can be both powerful and elegant, simplifying complex infrastructures into manageable, reusable components.
 
---- 
-
-This enhancement provides a progression from the initial stages of Terraform usage, reinforcing the benefits of modules in a more relatable and comprehensive manner.
 
 ## AWS Configuration with Custom Modules (`main.tf`)
 
