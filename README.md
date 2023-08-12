@@ -19,6 +19,8 @@ Throughout this guide, we'll be deploying the following components in both AWS a
 - Subnet
 - Virtual Machine
 
+![IaC Overview](drawings/IaC_overview.png)
+
 ---
 
 # 1. Basic Terraform with a Flat Structure
