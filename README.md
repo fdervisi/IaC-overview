@@ -538,7 +538,6 @@ variable "azure_admin_password" {
 }
 
 
-
 variable "vpc_tags" {
   description = "Tags to apply to resources created by VPC module"
   type        = map(string)
@@ -552,7 +551,7 @@ variable "vpc_tags" {
 
 ---
 
-# 4. Scaling with Modular Design
+# 3. Scaling with Modular Design
 
 As we grow more sophisticated in our Terraform journey, moving from hardcoded values to variables, another transformative step awaits: the use of Terraform modules. Think back to those initial days when we copied snippets from the documentation. Those snippets were isolated configurations. But as we scaled, we realized that many of these configurations were repetitive, or at the very least, followed common patterns.
 
@@ -607,6 +606,133 @@ module "azure_instances_1" {
   azure_vnet_cidr   = "10.0.0.0/24"
 }
 ```
+
+---
+
+# 4. Leveraging Standard Modules from the Terraform Registry
+
+While creating custom modules offers tailored infrastructure deployment, there's a wealth of community-contributed modules available on the [Terraform Registry](https://registry.terraform.io/). These modules are tested, maintained, and often cover most general use cases, making them a great starting point or supplement to our infrastructure code.
+
+Using such pre-defined modules can significantly reduce the time and effort required to deploy infrastructure components, as they encapsulate best practices and avoid common pitfalls.
+
+Let's see how we can leverage these standard modules for our AWS and Azure deployments:
+
+## AWS Configuration using Terraform Registry Modules (`main.tf`)
+
+```terraform
+provider "aws" {
+  region = "eu-south-1"
+}
+
+# Fetch Available Availability Zones
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+# Fetch latest AWS Linux AMI
+data "aws_ami" "amazon-linux-2-kernel-5" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-5*"]
+  }
+}
+
+# Set up AWS Networking using VPC module
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "2.21.0"
+
+  azs            = var.vpc_azs
+  name           = "vpc_1"
+  cidr           = "10.0.0.0/16"
+  public_subnets = ["10.0.0.0/24"]
+  tags = {
+    Name = "vpc_1"
+  }
+}
+
+# Set up AWS EC2 Instances
+module "ec2_instances" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "2.12.0"
+
+  name                   = "ec2_1"
+  instance_count         = 1
+  ami                    = data.aws_ami.amazon-linux-2-kernel-5.id
+  instance_type          = "t3.micro"
+  vpc_security_group_ids = [module.vpc.default_security_group_id]
+  subnet_id              = module.vpc.public_subnets[0]
+  user_data              = <<EOF
+  	#! /bin/bash
+    sudo yum update -y
+  	sudo touch /home/ec2-user/USERDATA_EXECUTED
+  EOF
+  
+  tags = {
+    Name = "ec2_1"
+  }
+}
+
+```
+
+## Azure Configuration using Terraform Registry Modules (`main.tf`)
+
+```terraform
+provider "azurerm" {
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
+}
+
+# Define Azure Resource Group
+resource "azurerm_resource_group" "rg_iac" {
+  name     = "fdervisi_IaC_basic"
+  location = "North Europe"
+}
+
+# Set up Azure Networking using VNet module
+module "vnet" {
+  source              = "Azure/vnet/azurerm"
+  version             = "3.0.0"
+  resource_group_name = azurerm_resource_group.rg_iac.name
+  vnet_location       = azurerm_resource_group.rg_iac.location
+  address_space       = ["10.0.0.0/16"]
+  subnet_prefixes     = ["10.0.0.0/24"]
+  vnet_name           = "vnet_1"
+  subnet_names        = ["subnet_1"]
+  tags = {
+    Name = "vnet_1"
+  }
+}
+
+# Set up Azure VM using Compute module
+module "vm" {
+  source              = "Azure/compute/azurerm"
+  resource_group_name = azurerm_resource_group.rg_iac.name
+  vm_size             = "Standard_DS1_v2"
+  vm_os_simple        = "UbuntuServer"
+  vnet_subnet_id      = module.vnet.vnet_subnets[0]
+  remote_port         = 22
+  admin_username      = "fatos"
+  admin_password      = "Zscaler2022"
+
+  tags = {
+    Name = "vm_1"
+  }
+
+  depends_on = [
+    azurerm_resource_group.rg_iac
+  ]
+}
+```
+
+
+
+
 
 ---
 
