@@ -1,4 +1,4 @@
-# Infrastructure as Code (IaC) with Terraform: A Comprehensive Guide
+# Mastering Modular & Scalable Design: A Journey with Terraform and Terraform CDK
 
 Infrastructure as Code (IaC) is a pivotal practice in the modern DevOps landscape. It paves the way for provisioning infrastructure through code, turning the infrastructure into something reproducible, scalable, and maintainable. Among the myriad of IaC tools available, Terraform by HashiCorp stands tall, offering support for a plethora of cloud platforms and services.
 
